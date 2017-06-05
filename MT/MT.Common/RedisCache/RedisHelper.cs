@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 namespace MT.Common.RedisCache
 {
 
-    class RedisHelper
+     public  class RedisHelper
     {
 
     }
