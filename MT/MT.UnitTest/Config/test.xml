@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<xml>
+<data>test</data>
+<TestModel>
+  <ID>1</ID>
+  <Name>张三</Name>
+  <Test>
+    <ID>2</ID>
+    <Name>张五</Name>
+  </Test>
+</TestModel>
+</xml>
+ 

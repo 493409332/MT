@@ -5,15 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="bin\Debug\netcoreapp1.1\testModel.json" />
-    <Content Include="bin\Debug\netcoreapp1.1\testModel.xml" />
     <Content Include="bin\Debug\netcoreapp1.1\test.json" />
     <Content Include="bin\Debug\netcoreapp1.1\test.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="bin\Debug\netcoreapp1.1\testModel.ini" />
-    <None Include="bin\Debug\netcoreapp1.1\test.ini" />
+    <Content Include="bin\Debug\netcoreapp1.1\testModel.json" />
+    <Content Include="bin\Debug\netcoreapp1.1\testModel.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +25,11 @@
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bin\Debug\netcoreapp1.1\test.ini" />
+    <None Include="bin\Debug\netcoreapp1.1\testModel.ini" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties bin_4Debug_4netcoreapp1_11_4test_1json__JSONSchema="http://json.schemastore.org/config" /></VisualStudio></ProjectExtensions>
