@@ -1,13 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
-using Microsoft.Extensions.Configuration.Xml;
 using Microsoft.Extensions.Configuration.Memory;
-using Microsoft.Extensions.Configuration.Binder;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
 namespace MT.Common.ConfigHelper
 {
     /// <summary>
@@ -25,36 +22,22 @@ namespace MT.Common.ConfigHelper
         static ConfigurationBuilder configbuilder = new ConfigurationBuilder();
 
 
-
+        static Type[] typelist = new Type[15] { typeof(bool), typeof(byte), typeof(char), typeof(decimal), typeof(double), typeof(float), typeof(int), typeof(long), typeof(sbyte), typeof(short), typeof(uint), typeof(ulong), typeof(ushort), typeof(object), typeof(string) };
+        static Type[] IsValueTypelist = new Type[13] { typeof(bool), typeof(byte), typeof(char), typeof(decimal), typeof(double), typeof(float), typeof(int), typeof(long), typeof(sbyte), typeof(short), typeof(uint), typeof(ulong), typeof(ushort) };
         /// <summary>
         /// 根据节点获取配置
         /// </summary>
-        /// <typeparam name="T"> </typeparam>
+        /// <typeparam name="T">支持所有类型</typeparam>
         /// <param name="FileName">文件名</param>
         /// <param name="key">节点 key ; key:value</param>
         /// <param name="configtype">配置类型</param>
         /// <param name="BasePath">文件目录</param>
         /// <returns>返回对应泛型值</returns>
-        public static T GetConfigurationValue<T>(string FileName, string key, ConfigurationType configtype = ConfigurationType.JSON, string BasePath = "") 
+        public static T GetConfigurationValue<T>(string FileName, string key, ConfigurationType configtype = ConfigurationType.JSON, string BasePath = "")
         {
             string BasePat = BasePath.Length == 0 ? Directory.GetCurrentDirectory() : BasePath;
-           Type type= typeof(T);
-            List<Type> typelist = new List<Type>();
-            typelist.Add(typeof(bool));
-            typelist.Add(typeof(byte));
-            typelist.Add(typeof(char));
-            typelist.Add(typeof(decimal));
-            typelist.Add(typeof(double));
-            typelist.Add(typeof(float));
-            typelist.Add(typeof(int));
-            typelist.Add(typeof(long));
-            typelist.Add(typeof(sbyte));
-            typelist.Add(typeof(short));
-            typelist.Add(typeof(uint));
-            typelist.Add(typeof(ulong));
-            typelist.Add(typeof(ushort));
-            typelist.Add(typeof(string));
-            typelist.Add(typeof(object)); 
+            Type type = typeof(T);
+
             if (typelist.Contains(type))
             {
                 switch (configtype)
@@ -71,26 +54,61 @@ namespace MT.Common.ConfigHelper
                         return default(T);
                 }
             }
+            else if (type.IsConstructedGenericType)
+            {
+                T list = Activator.CreateInstance<T>();
+                int index = 0;
+                bool IsRun = true;
+                do
+                {
+                    Type Generic = type.GetGenericArguments().First();
+
+                    object model = typeof(ConfigurationHelper).GetMethod("GetConfigurationValue").MakeGenericMethod(Generic).Invoke(null, new object[] { FileName, string.Format("{0}:{1}", key, index), configtype, "" });
+                    if (model != null)
+                    {
+                        index++;
+                        type.GetMethod("Add").Invoke(list, new object[] { model });
+                    }
+                    else 
+                        IsRun = false;  
+                } while (IsRun);
+
+                return list;
+            }
             else
             {
                 T model = Activator.CreateInstance<T>();
+                bool isnull = false;
                 foreach (var item in type.GetProperties())
                 {
-                    item.SetValue(model, typeof(ConfigurationHelper).GetMethod("GetConfigurationValue").MakeGenericMethod(item.PropertyType).Invoke(null, new object[] { FileName, string.Format("{0}:{1}", key, item.Name), configtype,"" }));
+                    object defaultval = null;
+
+                    object val = typeof(ConfigurationHelper).GetMethod("GetConfigurationValue").MakeGenericMethod(item.PropertyType).Invoke(null, new object[] { FileName, string.Format("{0}:{1}", key, item.Name), configtype, "" });
+
+                    if (IsValueTypelist.Contains(item.PropertyType))
+                    {
+                        defaultval = Activator.CreateInstance(item.PropertyType);
+                        if (val != defaultval && !val.Equals(defaultval))
+                            isnull = true;
+                    }
+                    item.SetValue(model, val);
                 }
-                return model;
+                if (isnull)
+                    return model;
+                else
+                    return default(T);
 
-            }
-
-
+            } 
 
         }
 
+ 
         /// <summary>
         /// 获取配置
         /// </summary>
+        /// <typeparam name="T">对应类型整体转换</typeparam>
         /// <param name="FileName">文件名</param>
-        /// <param name="key">节点 key ; key:value</param>
+        /// <param name="configtype">配置类型</param>
         /// <param name="BasePath">文件目录</param>
         /// <returns></returns>
         public static T GetConfiguration<T>(string FileName,  ConfigurationType configtype = ConfigurationType.JSON, string BasePath = "")
