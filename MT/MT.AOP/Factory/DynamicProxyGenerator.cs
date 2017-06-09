@@ -247,21 +247,19 @@ namespace MT.AOP.Factory
             for (int i = 1; i <= parameterInfos.Length; i++)
             {
                 generator.Emit(OpCodes.Ldloc, contextLocal);
+
+                generator.Emit(OpCodes.Ldstr, parameterInfos[i - 1].Name);
+
                 generator.Emit(OpCodes.Ldarg, i);
                 if (parameterInfos[i - 1].ParameterType.GetTypeInfo().IsValueType)
                 {
                     generator.Emit(OpCodes.Box, parameterInfos[i - 1].ParameterType);
                 }
+                
 
-#warning out 参数作为指针传送无法中途拦截赋值 必须在方法中实现赋值目前有没有找到有效解决方案
-
-                //if ( parameterInfos[i - 1].ParameterType.Name.Contains("&") )
-                //{
-                //    generator.Emit(OpCodes.Box, Type.GetType( parameterInfos[i - 1].ParameterType.FullName.Replace("&","")));
-                //    generator.Emit(OpCodes.Unbox, Type.GetType(parameterInfos[i - 1].ParameterType.FullName.Replace("&", "")));
-                //}
-                generator.Emit(OpCodes.Call, contextType.GetMethod("SetParameter", BindingFlags.Public | BindingFlags.Instance));
+                generator.Emit(OpCodes.Call, contextType.GetMethod("SetParameterFull", BindingFlags.Public | BindingFlags.Instance));
             }
+
 
             #endregion
 
@@ -271,6 +269,7 @@ namespace MT.AOP.Factory
              * PreAspectAttribute preAspectLocal = 
              *      (PreAspectAttribute)Attribute.GetCustomAttribute(methodInfoLocal, typeof(PreAspectAttribute))
              */
+
             var methodInfoLocal = generator.DeclareLocal(typeof(System.Reflection.MethodInfo));
 
 

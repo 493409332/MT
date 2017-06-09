@@ -22,8 +22,7 @@ namespace MT.Common.ConfigHelper
         static ConfigurationBuilder configbuilder = new ConfigurationBuilder();
 
 
-        static Type[] typelist = new Type[15] { typeof(bool), typeof(byte), typeof(char), typeof(decimal), typeof(double), typeof(float), typeof(int), typeof(long), typeof(sbyte), typeof(short), typeof(uint), typeof(ulong), typeof(ushort), typeof(object), typeof(string) };
-        static Type[] IsValueTypelist = new Type[13] { typeof(bool), typeof(byte), typeof(char), typeof(decimal), typeof(double), typeof(float), typeof(int), typeof(long), typeof(sbyte), typeof(short), typeof(uint), typeof(ulong), typeof(ushort) };
+    
         /// <summary>
         /// 根据节点获取配置
         /// </summary>
@@ -38,7 +37,7 @@ namespace MT.Common.ConfigHelper
             string BasePat = BasePath.Length == 0 ? Directory.GetCurrentDirectory() : BasePath;
             Type type = typeof(T);
 
-            if (typelist.Contains(type))
+            if (type.GetTypeInfo().IsValueType)
             {
                 switch (configtype)
                 {
@@ -85,7 +84,7 @@ namespace MT.Common.ConfigHelper
 
                     object val = typeof(ConfigurationHelper).GetMethod("GetConfigurationValue").MakeGenericMethod(item.PropertyType).Invoke(null, new object[] { FileName, string.Format("{0}:{1}", key, item.Name), configtype, "" });
 
-                    if (IsValueTypelist.Contains(item.PropertyType))
+                    if (item.PropertyType.GetTypeInfo().IsValueType)
                     {
                         defaultval = Activator.CreateInstance(item.PropertyType);
                         if (val != defaultval && !val.Equals(defaultval))

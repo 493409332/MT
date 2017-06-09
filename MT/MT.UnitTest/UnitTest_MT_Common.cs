@@ -28,7 +28,7 @@ namespace MT.UnitTest
     }
 
     [TestClass]
-    public class UnitTest1
+    public class UnitTest_MT_Common
     {
         [TestMethod]
         public void TestGetConfigurationValue()

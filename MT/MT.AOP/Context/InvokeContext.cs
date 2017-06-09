@@ -1,8 +1,46 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace MT.AOP.Context
 {
+
+    public class DictionaryS<TKey, TValue> : Dictionary<TKey, TValue>
+    {
+        public List<object> _parameters;
+        public new TValue this[TKey key]
+        {
+
+            get
+            {
+                IDictionaryEnumerator _hashEnum = this.GetEnumerator();
+                while (_hashEnum.MoveNext())
+                {
+                    if (_hashEnum.Key == (object)key)
+                    {
+                        return (TValue)_hashEnum.Value;
+                    }
+
+                }
+                return default(TValue);
+            }
+
+            set
+            {
+                this.Remove(key);
+                this.Add(key, value);
+                _parameters.Clear();
+                IDictionaryEnumerator _hashEnum = this.GetEnumerator();
+                while (_hashEnum.MoveNext())
+                {
+                    _parameters.Add(_hashEnum.Value);
+
+                }
+
+            }
+        }
+
+    }
     /// <summary>
     /// 所有元数据
     /// </summary>
@@ -11,6 +49,7 @@ namespace MT.AOP.Context
 
         //List<ParameterMetadata> _parameters;
         List<object> _parameters = new List<object>();
+        DictionaryS<string, object> _parametersfull = new DictionaryS<string, object>();
 
         bool _IsRun = true;
         /// <summary>
@@ -21,13 +60,13 @@ namespace MT.AOP.Context
             get { return _IsRun; }
             set { _IsRun = value; }
         }
-         
-       
+
+
         public List<object> Parameters
         {
             get
             {
-                if ( _parameters != null )
+                if (_parameters != null)
                 {
                     return _parameters;
                 }
@@ -35,6 +74,22 @@ namespace MT.AOP.Context
                 return null;
             }
         }
+
+        public DictionaryS<string, object> ParametersFull
+        {
+            get
+            {
+                if (_parametersfull != null)
+                {
+                    return _parametersfull;
+                }
+
+                return null;
+            }
+        }
+
+
+
         string _method;
         /// <summary>
         /// 方法元数据
@@ -98,6 +153,15 @@ namespace MT.AOP.Context
         public void SetParameter(object parameter)
         {
             _parameters.Add(parameter);
+        }
+
+
+        public void SetParameterFull(string name, object parameter)
+        {
+            _parametersfull.Add(name, parameter);
+            SetParameter(parameter);
+            _parametersfull._parameters = _parameters;
+
         }
         /// <summary>
         /// 添加异常元数据

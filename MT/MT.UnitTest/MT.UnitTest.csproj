@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MT.AOP\MT.AOP.csproj" />
     <ProjectReference Include="..\MT.Common\MT.Common.csproj" />
   </ItemGroup>
 
