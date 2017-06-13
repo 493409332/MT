@@ -23,14 +23,14 @@ namespace Complex.Logical
             context.ParametersFull["d"] = "哈哈哈";
             context.ParametersFull["A"] = new int[]{10,20,30,40};
 
-            Type[] types = new Type[]
-            { 
-                typeof(int).MakeByRefType() 
-            };
+            //Type[] types = new Type[]
+            //{ 
+            //    typeof(int).MakeByRefType() 
+            //};
 
 
-            MethodInfo method = GetType().GetMethod("RefHe", types);
-            method.Invoke(this,new object[] {  context.ParametersFull["e"] });
+            //MethodInfo method = GetType().GetMethod("RefHe", types);
+            //method.Invoke(this,new object[] {  context.ParametersFull["e"] });
             // RefHe(  context.ParametersFull["e"]);
 
             //IntPtr ptr = GCHandle.ToIntPtr(handle);
