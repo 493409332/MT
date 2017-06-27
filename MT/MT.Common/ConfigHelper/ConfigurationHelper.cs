@@ -37,7 +37,7 @@ namespace MT.Common.ConfigHelper
             string BasePat = BasePath.Length == 0 ? Directory.GetCurrentDirectory() : BasePath;
             Type type = typeof(T);
 
-            if (type.GetTypeInfo().IsValueType)
+            if (type.GetTypeInfo().IsValueType|| new List<Type> (){ typeof(string),typeof(object) }.Contains( type))
             {
                 switch (configtype)
                 {

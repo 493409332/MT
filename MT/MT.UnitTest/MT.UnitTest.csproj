@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MT.AOP\MT.AOP.csproj" />
     <ProjectReference Include="..\MT.Common\MT.Common.csproj" />
+    <ProjectReference Include="..\MT.Redis\MT.Redis.csproj" />
   </ItemGroup>
 
   <ItemGroup>
