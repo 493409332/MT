@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using MT.AOP.Factory;
 using Complex.Logical.Admin;
 using MT.Redis;
+using System.Diagnostics;
 
 namespace MT.UnitTest
 {
@@ -17,8 +18,18 @@ namespace MT.UnitTest
         [TestMethod]
         public void TestRedis()
         {
-            RedisHelper redis = new RedisHelper("192.168.10.5:7000,abortConnect=false");
+            Stopwatch sw = new Stopwatch();
+            sw.Start(); 
+
+            RedisHelper redis = new RedisHelper();
+
+            sw.Stop();
+            TimeSpan ts2 = sw.Elapsed;
+            sw.Restart();
             string name= redis.Get<string>("name");
+
+            sw.Stop();
+              ts2 = sw.Elapsed;
             Assert.AreEqual(name,"miantiao");
 
         }

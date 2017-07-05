@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MT.UnitTest", "MT.UnitTest\MT.UnitTest.csproj", "{859875EB-240E-43E4-9EED-69ECD4C22B03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MT.UnitTest", "MT.UnitTest\MT.UnitTest.csproj", "{859875EB-240E-43E4-9EED-69ECD4C22B03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MT.Common", "MT.Common\MT.Common.csproj", "{9F262579-92BC-4045-A003-B3F574BB116E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MT.Common", "MT.Common\MT.Common.csproj", "{9F262579-92BC-4045-A003-B3F574BB116E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MT.AOP", "MT.AOP\MT.AOP.csproj", "{727041F0-7E75-4994-A3A5-08A8DF3C7957}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MT.AOP", "MT.AOP\MT.AOP.csproj", "{727041F0-7E75-4994-A3A5-08A8DF3C7957}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MT.Redis", "MT.Redis\MT.Redis.csproj", "{0816E5EE-3517-47AA-8663-A77752B6080E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MT.Redis", "MT.Redis\MT.Redis.csproj", "{0816E5EE-3517-47AA-8663-A77752B6080E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
