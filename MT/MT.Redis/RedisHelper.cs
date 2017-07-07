@@ -10,6 +10,7 @@ using log4net.Repository;
 using log4net.Config;
 using System.IO;
 using log4net;
+using MT.Common.Log4Utility;
 
 namespace MT.Redis
 {
@@ -111,19 +112,8 @@ namespace MT.Redis
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private static void MuxerConfigurationChanged(object sender, EndPointEventArgs e)
-        {
-
-            ILoggerRepository repository = LogManager.CreateRepository("NETCoreRepository");
-            var file = new FileInfo("log4net.config");
-            XmlConfigurator.Configure(repository, file);
-
-
-
-            ILog log = LogManager.GetLogger(repository.Name, "testApp.Logging");
-
-            log.Info("Configuration changed: " + e.EndPoint);
- 
-             
+        { 
+            Log4Helper.Info("Configuration changed: " + e.EndPoint); 
         }
 
         /// <summary>
@@ -132,8 +122,8 @@ namespace MT.Redis
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private static void MuxerErrorMessage(object sender, RedisErrorEventArgs e)
-        {
-            Console.WriteLine("ErrorMessage: " + e.Message);
+        { 
+            Log4Helper.Error("ErrorMessage: " + e.Message);
         }
 
         /// <summary>
@@ -143,7 +133,7 @@ namespace MT.Redis
         /// <param name="e"></param>
         private static void MuxerConnectionRestored(object sender, ConnectionFailedEventArgs e)
         {
-            Console.WriteLine("ConnectionRestored: " + e.EndPoint);
+            Log4Helper.Error("ConnectionRestored: " + e.EndPoint); 
         }
 
         /// <summary>
@@ -153,7 +143,7 @@ namespace MT.Redis
         /// <param name="e"></param>
         private static void MuxerConnectionFailed(object sender, ConnectionFailedEventArgs e)
         {
-            Console.WriteLine("重新连接：Endpoint failed: " + e.EndPoint + ", " + e.FailureType + (e.Exception == null ? "" : (", " + e.Exception.Message)));
+            Log4Helper.Error("重新连接：Endpoint failed: " + e.EndPoint + ", " + e.FailureType + (e.Exception == null ? "" : (", " + e.Exception.Message))); 
         }
 
         /// <summary>
@@ -163,7 +153,7 @@ namespace MT.Redis
         /// <param name="e"></param>
         private static void MuxerHashSlotMoved(object sender, HashSlotMovedEventArgs e)
         {
-            Console.WriteLine("HashSlotMoved:NewEndPoint" + e.NewEndPoint + ", OldEndPoint" + e.OldEndPoint);
+            Log4Helper.Info("HashSlotMoved:NewEndPoint" + e.NewEndPoint + ", OldEndPoint" + e.OldEndPoint); 
         }
 
         /// <summary>
@@ -173,7 +163,8 @@ namespace MT.Redis
         /// <param name="e"></param>
         private static void MuxerInternalError(object sender, InternalErrorEventArgs e)
         {
-            Console.WriteLine("InternalError:Message" + e.Exception.Message);
+            Log4Helper.Error("InternalError:Message" + e.Exception.Message);
+
         }
 
 
@@ -208,25 +199,7 @@ namespace MT.Redis
             return null;
 
         }
-
-        //public static string ListKeyName = "MessageList";
-        //public void HomeController()
-        //{
-        //   var db = Connection.GetDatabase();
-        //    if (db.IsConnected(ListKeyName) && (!db.KeyExists(ListKeyName) || !db.KeyType(ListKeyName).Equals(RedisType.List)))
-        //    {
-        //        //Add sample data.
-        //        db.KeyDelete(ListKeyName);
-        //        //Push data from the left
-        //        db.ListLeftPush(ListKeyName, "TestMsg1");
-        //        db.ListLeftPush(ListKeyName, "TestMsg2");
-        //        db.ListLeftPush(ListKeyName, "TestMsg3");
-        //        db.ListLeftPush(ListKeyName, "TestMsg4");
-        //    }
-
-
-
-        //}
+ 
 
     }
 

@@ -10,13 +10,14 @@ namespace MT.ConsoleTest
         {
             //Encoding.
            
-            Log4Helper.GetLog(Log4level.Console).Info("呵呵呵 start!");
+        
 
             try
             {
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                Console.WriteLine(Encoding.GetEncoding("GB2312"));
-                Console.WriteLine("您好，北京欢迎你");
+               
+                Log4Helper.ConsoleInfo("呵呵呵 start!");
+               
             }
             catch (Exception ex)
             {
