@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MT.AOP.Attributes;
 using MT.AOP.Context;
+using MT.Common.Log4Utility;
 
 namespace Complex.Logical
 {
@@ -12,8 +13,8 @@ namespace Complex.Logical
     {
         public override InvokeContext Action(InvokeContext context)
         {
-            Console.WriteLine("log exception!");
-
+     
+            Log4Helper.GetLog(Log4level.Console).Info("log exception!");
             throw context.Ex;
 
         }

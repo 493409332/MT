@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MT.Common.Json
+namespace MT.Common.JsonUtility
 {
     /// <summary>
     /// 分隔Json字符串为字典集合。

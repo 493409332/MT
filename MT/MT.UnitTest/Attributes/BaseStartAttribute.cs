@@ -7,15 +7,15 @@ using MT.AOP.Attributes;
 using MT.AOP.Context;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using MT.Common.Log4Utility;
 
 namespace Complex.Logical
 {
     public class BaseStartAttribute : PreAspectAttribute
     {
         public override InvokeContext Action(InvokeContext context)
-        {
-            Console.WriteLine("log start!");
-
+        { 
+            Log4Helper.GetLog(Log4level.Console).Info("1111log start!");
 
             context.ParametersFull["a"] = 100; 
             context.ParametersFull["b"] = 200;  

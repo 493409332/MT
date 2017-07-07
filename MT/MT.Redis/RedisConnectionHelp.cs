@@ -1,4 +1,4 @@
-﻿using MT.Common.ConfigHelper;
+﻿using MT.Common.ConfigUtility;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;

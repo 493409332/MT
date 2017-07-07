@@ -6,6 +6,7 @@ using System.Threading.Tasks;
  
 using MT.AOP.Context;
 using MT.AOP.Attributes;
+using MT.Common.Log4Utility;
 
 namespace Complex.Logical
 {
@@ -14,7 +15,8 @@ namespace Complex.Logical
     {
         public override InvokeContext Action(InvokeContext context)
         {
-            Console.WriteLine("log end!");
+            Log4Helper.GetLog(Log4level.Console).Info("1111log end!");
+          
             return context;
         }
     }

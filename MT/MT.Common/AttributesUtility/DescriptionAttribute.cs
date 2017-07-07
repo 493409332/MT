@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MT.Common.Attributes
+namespace MT.Common.AttributesUtility
 {
     /// <summary>
     /// 提供对类型、成员的描述功能

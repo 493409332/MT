@@ -25,7 +25,7 @@ namespace MT.Redis
             log.Info("test log");
             log.Error("error");
             log.Info("linezero");
-
+            
         }
     }
 }

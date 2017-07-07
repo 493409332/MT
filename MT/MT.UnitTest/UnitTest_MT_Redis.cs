@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Configuration;
-using MT.Common.ConfigHelper;
+using MT.Common.ConfigUtility;
 using System.Collections.Generic;
 using MT.AOP.Factory;
 using Complex.Logical.Admin;

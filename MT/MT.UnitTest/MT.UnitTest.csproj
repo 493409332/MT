@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="ve-4563.tmp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="bin\Debug\netcoreapp1.1\redis.json" />
     <Content Include="bin\Debug\netcoreapp1.1\test.json" />
     <Content Include="bin\Debug\netcoreapp1.1\test.xml" />
     <Content Include="bin\Debug\netcoreapp1.1\testModel.json" />
@@ -30,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="bin\Debug\netcoreapp1.1\log4net.config" />
     <None Include="bin\Debug\netcoreapp1.1\test.ini" />
     <None Include="bin\Debug\netcoreapp1.1\testModel.ini" />
   </ItemGroup>
