@@ -20,14 +20,15 @@ namespace MT.UnitTest
         [TestMethod]
         public void TestLog4()
         {
-            var quer = Log4Helper.ReadLogList("logfile/log-INFO.log");
+            var quer = Log4Helper.ReadLogList(string.Format( "logfile/{0}.log",DateTime.Now.ToString("yyyyMMdd")));
+         
             int logCount = quer.Count;
-            Log4Helper.GetLog(Log4level.INFO).Info("te st");
-            Log4Helper.GetLog(Log4level.INFO).Fatal("Fatal");
+            Log4Helper.Info("te st");
+            Log4Helper.Fatal("Fatal");
+            Log4Helper.Error("Error");
+            quer = Log4Helper.ReadLogList(string.Format("logfile/{0}.log", DateTime.Now.ToString("yyyyMMdd")));
 
-            quer = Log4Helper.ReadLogList("logfile/log-INFO.log");
-
-            Assert.IsTrue((logCount + 2) == quer.Count);
+            Assert.IsTrue((logCount + 3) == quer.Count);
         }
     }
 

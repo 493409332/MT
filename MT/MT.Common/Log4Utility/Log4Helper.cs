@@ -196,7 +196,7 @@ namespace MT.Common.Log4Utility
                             {
                                 if (item.StartsWith("记录时间:"))
                                 {
-                                    model.Date = DateTime.ParseExact(item.Replace("记录时间:", ""), "yyyy-MM-dd hh:mm:ss,fff", System.Globalization.CultureInfo.CurrentCulture); 
+                                    model.Date = DateTime.ParseExact(item.Replace("记录时间:", ""), "yyyy-MM-dd HH:mm:ss,fff", System.Globalization.CultureInfo.InvariantCulture); 
                                 }
                                 if (item.StartsWith("线程ID:"))
                                 {
