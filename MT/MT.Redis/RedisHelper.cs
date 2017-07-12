@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace MT.Redis
 {
     /// <summary>
-    /// redis帮助类
+    /// redis帮助类 注意集群无法同时操作多个key
     /// </summary>
     public class RedisHelper
     {
@@ -29,13 +29,15 @@ namespace MT.Redis
         {
             public string Type { get; set; }
             public string ConnectionString { get; set; }
-            public string[] ConnectionStrings { get; set; }
+            public string ConnectionStrings { get; set; }
         }
 
-        private Lazy<ConnectionMultiplexer> lazyConnection = null;
+        public Lazy<ConnectionMultiplexer> lazyConnection = null;
         //redis链接字符串 
         private static readonly RedisConfig RedisConnectionString = ConfigurationHelper.GetConfiguration<RedisConfig>("redis.json", ConfigurationType.JSON);
-         
+
+        public static readonly RedisHelper Instance =new RedisHelper();
+
         public RedisHelper()
         {
             if (RedisConnectionString.Type.Equals("cluster"))
@@ -110,7 +112,7 @@ namespace MT.Redis
         {
             get
             {
-                return lazyConnection.Value.GetDatabase();
+                return Instance.lazyConnection.Value.GetDatabase();
             }
         }
         #endregion
@@ -193,18 +195,18 @@ namespace MT.Redis
         /// <param name="ts">过期时间</param>
         /// <returns></returns>
         public bool Set<T>(string Key, T t, TimeSpan? ts = default(TimeSpan?))
-        {
+        { 
 
-            var tstr = JsonConvert.SerializeObject(t);
+            var tstr = typeof(T).Name == typeof(string).Name? t as string:JsonConvert.SerializeObject(t);
             return RedisDB.StringSet(Key, tstr, ts);
         }
         /// <summary>
-        /// 保存多个key value
+        /// 保存多个key value 集群无法使用改方法
         /// </summary>
         /// <param name="keyValues">键值对</param>
         /// <returns></returns>
         public bool Set(List<KeyValuePair<RedisKey, RedisValue>> keyValues)
-        {
+        { 
             return RedisDB.StringSet(keyValues.ToArray());
         }
 
@@ -239,7 +241,8 @@ namespace MT.Redis
         /// <returns></returns>
         public List<T> Get<T>(List<string> KeyList) where T : class
         {
-            var RedisValues = RedisDB.StringGet(KeyList.Select(redisKey => (RedisKey)redisKey).ToArray());
+            var quer=  KeyList.Select(redisKey => (RedisKey)redisKey).ToArray();
+            var RedisValues = RedisDB.StringGet(quer);
             List<T> list = new List<T>();
             foreach (var item in RedisValues)
             {
@@ -294,9 +297,9 @@ namespace MT.Redis
         /// <param name="value">保存的值</param>
         /// <param name="expiry">过期时间</param>
         /// <returns></returns>
-        public async Task<bool> SetAsync<T>(string key, T obj, TimeSpan? expiry = default(TimeSpan?))
+        public async Task<bool> SetAsync<T>(string key, T t, TimeSpan? expiry = default(TimeSpan?))
         {
-            var tstr = JsonConvert.SerializeObject(obj);
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
             return await RedisDB.StringSetAsync(key, tstr, expiry);
         }
 
@@ -412,9 +415,9 @@ namespace MT.Redis
         /// <param name="t"></param>
         /// <returns></returns>
         public bool HashSet<T>(string key, string dataKey, T t)
-        {
-            string json =JsonConvert.SerializeObject(t);
-            return RedisDB.HashSet(key, dataKey, json); 
+        { 
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
+            return RedisDB.HashSet(key, dataKey, tstr); 
         }
 
         /// <summary>
@@ -510,9 +513,9 @@ namespace MT.Redis
         /// <param name="t"></param>
         /// <returns></returns>
         public async Task<bool> HashSetAsync<T>(string key, string dataKey, T t)
-        {
-            string json = JsonConvert.SerializeObject(t);
-            return await RedisDB.HashSetAsync(key, dataKey, json);
+        { 
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
+            return await RedisDB.HashSetAsync(key, dataKey, tstr);
         }
 
         /// <summary>
@@ -598,9 +601,10 @@ namespace MT.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public long ListRemove<T>(string key, T value)
+        public long ListRemove<T>(string key, T t)
         {
-           return RedisDB.ListRemove(key, JsonConvert.SerializeObject(value));
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
+            return RedisDB.ListRemove(key,tstr);
         }
 
         /// <summary>
@@ -619,9 +623,10 @@ namespace MT.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public long ListRightPush<T>(string key, T value)
-        { 
-            return RedisDB.ListRightPush(key, JsonConvert.SerializeObject(value));
+        public long ListRightPush<T>(string key, T t)
+        {
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
+            return RedisDB.ListRightPush(key, tstr);
         }
 
         /// <summary>
@@ -642,9 +647,10 @@ namespace MT.Redis
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public long ListLeftPush<T>(string key, T value)
-        { 
-            return RedisDB.ListLeftPush(key, JsonConvert.SerializeObject(value));
+        public long ListLeftPush<T>(string key, T t)
+        {
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
+            return RedisDB.ListLeftPush(key, tstr);
         }
 
         /// <summary>
@@ -678,10 +684,10 @@ namespace MT.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public async Task<long> ListRemoveAsync<T>(string key, T value)
+        public async Task<long> ListRemoveAsync<T>(string key, T t)
         {
-             
-            return await RedisDB.ListRemoveAsync(key, JsonConvert.SerializeObject(value));
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
+            return await RedisDB.ListRemoveAsync(key,tstr);
         }
 
         /// <summary>
@@ -701,10 +707,10 @@ namespace MT.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public async Task<long> ListRightPushAsync<T>(string key, T value)
+        public async Task<long> ListRightPushAsync<T>(string key, T t)
         {
-             
-            return await RedisDB.ListRightPushAsync(key, JsonConvert.SerializeObject(value));
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
+            return await RedisDB.ListRightPushAsync(key,tstr);
         }
 
         /// <summary>
@@ -726,10 +732,10 @@ namespace MT.Redis
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public async Task<long> ListLeftPushAsync<T>(string key, T value)
+        public async Task<long> ListLeftPushAsync<T>(string key, T t)
         {
-             
-            return await RedisDB.ListLeftPushAsync(key, JsonConvert.SerializeObject(value));
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
+            return await RedisDB.ListLeftPushAsync(key, tstr);
         }
 
         /// <summary>
@@ -770,10 +776,10 @@ namespace MT.Redis
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="score"></param>
-        public bool SortedSetAdd<T>(string key, T value, double score)
+        public bool SortedSetAdd<T>(string key, T t, double score)
         {
-            
-            return RedisDB.SortedSetAdd(key, JsonConvert.SerializeObject(value), score);
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
+            return RedisDB.SortedSetAdd(key,tstr, score);
         }
 
         /// <summary>
@@ -781,10 +787,10 @@ namespace MT.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public bool SortedSetRemove<T>(string key, T value)
+        public bool SortedSetRemove<T>(string key, T t)
         {
-            
-            return RedisDB.SortedSetRemove(key, JsonConvert.SerializeObject(value));
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
+            return RedisDB.SortedSetRemove(key, tstr);
         }
 
         /// <summary>
@@ -820,10 +826,10 @@ namespace MT.Redis
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="score"></param>
-        public async Task<bool> SortedSetAddAsync<T>(string key, T value, double score)
+        public async Task<bool> SortedSetAddAsync<T>(string key, T t, double score)
         {
-            
-            return await RedisDB.SortedSetAddAsync(key, JsonConvert.SerializeObject(value), score);
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
+            return await RedisDB.SortedSetAddAsync(key, tstr, score);
         }
 
         /// <summary>
@@ -831,10 +837,10 @@ namespace MT.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public async Task<bool> SortedSetRemoveAsync<T>(string key, T value)
+        public async Task<bool> SortedSetRemoveAsync<T>(string key, T t)
         {
-            
-            return await RedisDB.SortedSetRemoveAsync(key, JsonConvert.SerializeObject(value));
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
+            return await RedisDB.SortedSetRemoveAsync(key,tstr);
         }
 
         /// <summary>
@@ -953,10 +959,11 @@ namespace MT.Redis
         /// <param name="channel"></param>
         /// <param name="msg"></param>
         /// <returns></returns>
-        public long Publish<T>(string channel, T msg)
+        public long Publish<T>(string channel, T t)
         {
             ISubscriber sub = lazyConnection.Value.GetSubscriber();
-            return sub.Publish(channel, JsonConvert.SerializeObject(msg));
+            var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
+            return sub.Publish(channel, tstr);
         }
 
         /// <summary>
@@ -1001,10 +1008,17 @@ namespace MT.Redis
         {
             return redisKeys.Select(redisKey => (RedisKey)redisKey).ToArray();
         }
+        public ITransaction CreateTransaction()
+        {
+            return RedisDB.CreateTransaction();
+        }
 
+    
+        public IServer GetServer(string hostAndPort)
+        {
+            return lazyConnection.Value.GetServer(hostAndPort);
+        }
         #endregion 辅助方法
 
-    }
-
-
+    } 
 }
