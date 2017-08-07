@@ -24,7 +24,7 @@ namespace MT.UnitTest
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            RedisHelper redis = new RedisHelper();
+            RedisHelper redis =   RedisHelper.Instance;
 
             sw.Stop();
             TimeSpan ts2 = sw.Elapsed;
@@ -34,30 +34,28 @@ namespace MT.UnitTest
             sw.Stop();
             ts2 = sw.Elapsed;
             Assert.AreEqual(name, "miantiao");
+
+
             var tran = redis.CreateTransaction();
 
-            tran.StringSetAsync("pwd1", "123123", TimeSpan.FromSeconds(6));
-
-           // RedisValue pwd =   tran.StringGetAsync((RedisKey)"pwd1").Result;
-
+            var pwd1stata= tran.StringSetAsync((RedisKey)"pwd1", (RedisValue)"123123", TimeSpan.FromSeconds(6));
+             
+            //Assert.AreEqual(pwd1stata.Result, true);
+ 
             bool committed = tran.Execute();
-
+            
             string pwd1 = redis.Get<string>("pwd1");
+
+
+
+
             var tpwd = GetpwdAsync();
   
-            List<KeyValuePair<RedisKey, RedisValue>> redislist = new List<KeyValuePair<RedisKey, RedisValue>>()
-            {  new KeyValuePair<RedisKey, RedisValue>("mykey", "myvalue"),
-                new KeyValuePair<RedisKey, RedisValue>("mykey1", "myvalue1")
-            };
-
-            //var qq = redis.HashKeys<string>("*");
-
-            //    List<string> list = redis.Get<string>(new List<string>(){"pwd","name"});
- 
-                    //       redis.Set(redislist );
+   
 
             Assert.AreEqual(tpwd.Result, "123123");
 
+    
 
         }
 

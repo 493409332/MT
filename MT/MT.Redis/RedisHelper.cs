@@ -31,12 +31,15 @@ namespace MT.Redis
             public string ConnectionString { get; set; }
             public string ConnectionStrings { get; set; }
         }
-
-        public Lazy<ConnectionMultiplexer> lazyConnection = null;
+        private static readonly object Locker = new object();
         //redis链接字符串 
         private static readonly RedisConfig RedisConnectionString = ConfigurationHelper.GetConfiguration<RedisConfig>("redis.json", ConfigurationType.JSON);
 
         public static readonly RedisHelper Instance =new RedisHelper();
+
+        private static ConnectionMultiplexer _instance;
+     
+ 
 
         public RedisHelper()
         {
@@ -51,10 +54,20 @@ namespace MT.Redis
         }
 
         public void LazyRedis(string ConnectionString)
-        {
-            lazyConnection = new Lazy<ConnectionMultiplexer>(() => { return RedisConnect(ConnectionString); });
-
+        { 
+            if (_instance == null)
+            {
+                lock (Locker)
+                {
+                    if (_instance == null || !_instance.IsConnected)
+                    {
+                        _instance = RedisConnect(ConnectionString);
+                    }
+                }
+            }
         }
+ 
+
         public ConnectionMultiplexer RedisConnect(string ConnectionString)
         {
             var connect = ConnectionMultiplexer.Connect(ConnectionString);
@@ -67,44 +80,7 @@ namespace MT.Redis
             return connect;
         }
 
-        public void LazyRedis(params string[] ConnectionString)
-        {
-
-#if !DEBUG
-            foreach (var item in ConnectionString)
-            {
-                lazyConnection = new Lazy<ConnectionMultiplexer>(() => { return RedisConnect(item); });
-                if (RedisDB.IsConnected(""))
-                    return;
-            }
-#endif
-#if DEBUG
-
-            foreach (var item in ConnectionString)
-            {
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
-                lazyConnection = new Lazy<ConnectionMultiplexer>(() => { return ConnectionMultiplexer.Connect(item); });
-
-                sw.Stop();
-                TimeSpan ts2 = sw.Elapsed;
-                sw.Restart();
-
-
-
-
-                if (RedisDB.IsConnected(""))
-                {
-                    sw.Stop();
-                    ts2 = sw.Elapsed;
-                    return;
-                }
-                sw.Stop();
-                ts2 = sw.Elapsed;
-            }
-#endif
-        }
-
+  
         /// <summary>
         /// redis连接接口
         /// </summary>
@@ -112,7 +88,7 @@ namespace MT.Redis
         {
             get
             {
-                return Instance.lazyConnection.Value.GetDatabase();
+                return _instance.GetDatabase();
             }
         }
         #endregion
@@ -938,7 +914,7 @@ namespace MT.Redis
         /// <param name="handler"></param>
         public void Subscribe(string subChannel, Action<RedisChannel, RedisValue> handler = null)
         {
-            ISubscriber sub = lazyConnection.Value.GetSubscriber();
+            ISubscriber sub = _instance.GetSubscriber();
             sub.Subscribe(subChannel, (channel, message) =>
             {
                 if (handler == null)
@@ -961,7 +937,7 @@ namespace MT.Redis
         /// <returns></returns>
         public long Publish<T>(string channel, T t)
         {
-            ISubscriber sub = lazyConnection.Value.GetSubscriber();
+            ISubscriber sub = _instance.GetSubscriber();
             var tstr = typeof(T).Name == typeof(string).Name ? t as string : JsonConvert.SerializeObject(t);
             return sub.Publish(channel, tstr);
         }
@@ -972,7 +948,7 @@ namespace MT.Redis
         /// <param name="channel"></param>
         public void Unsubscribe(string channel)
         {
-            ISubscriber sub = lazyConnection.Value.GetSubscriber();
+            ISubscriber sub = _instance.GetSubscriber();
             sub.Unsubscribe(channel);
         }
 
@@ -981,7 +957,7 @@ namespace MT.Redis
         /// </summary>
         public void UnsubscribeAll()
         {
-            ISubscriber sub = lazyConnection.Value.GetSubscriber();
+            ISubscriber sub = _instance.GetSubscriber();
             sub.UnsubscribeAll();
         }
 
@@ -1016,7 +992,7 @@ namespace MT.Redis
     
         public IServer GetServer(string hostAndPort)
         {
-            return lazyConnection.Value.GetServer(hostAndPort);
+            return _instance.GetServer(hostAndPort);
         }
         #endregion 辅助方法
 

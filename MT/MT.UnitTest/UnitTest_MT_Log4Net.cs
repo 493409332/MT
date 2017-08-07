@@ -24,6 +24,7 @@ namespace MT.UnitTest
          
             int logCount = quer.Count;
             Log4Helper.Info("te st");
+
             Log4Helper.Fatal("Fatal");
             Log4Helper.Error("Error");
             quer = Log4Helper.ReadLogList(string.Format("logfile/{0}.log", DateTime.Now.ToString("yyyyMMdd")));
