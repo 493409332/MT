@@ -32,7 +32,7 @@ namespace MT.UnitTest
         
         }
 
-        public object test(int a, int b, string c, object d, ref int e, out int f, params int[] A)
+        public object atest1(int a, int b, string c, object d, ref int e, out int f, params int[] A)
         {
             e = a + b;
 

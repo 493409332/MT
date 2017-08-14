@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Factory\**" />
+    <EmbeddedResource Remove="Factory\**" />
+    <None Remove="Factory\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MT.AOP\MT.AOP.csproj" />
+  </ItemGroup>
+
+</Project>
